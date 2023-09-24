@@ -1,0 +1,27 @@
+name: Trigger Nightwatch Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Nightwatch Tests in Tests Repository
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GH_PAT }}
+          script: |
+            const { data } = await github.actions.createWorkflowDispatch({
+              owner: 'Mega61',
+              repo: 'saviaE2Etesting',
+              workflow: 'E2Etesting.yml',  // Name of the workflow in the Tests Repository
+              ref: 'main'
+            });
+            console.log(data);
