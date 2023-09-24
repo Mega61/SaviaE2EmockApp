@@ -15,8 +15,37 @@ jobs:
     steps:
       - name: E2ETest
         run: |
-          curl -X POST https://api.github.com/repos/Mega61/saviaE2Etesting/actions/workflows/E2Etesting.yml/dispatches \
+          owner=Mega61
+          repo=saviaE2Etesting
+          curl -X POST https://api.github.com/repos/$owner/$repo/actions/workflows/E2Etesting.yml/dispatches \
           -H 'Accept: application/vnd.github+json' \
           -u ${{ secrets.GH_PAT }} \
           --data '{"ref":"main"}'
+
+          latest_run_id=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs" \
+            -H 'Accept: application/vnd.github+json' \
+            -u ${{ secrets.GH_PAT }} | jq -r '.workflow_runs[0].id')
+
+          while true; do
+            status=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs/$latest_run_id" \
+              -H 'Accept: application/vnd.github+json' \
+              -u ${{ secrets.GH_PAT }} | jq -r '.status')
+
+            # Check if the workflow status is completed (either success or failure)
+            if [ "$status" == "completed" ]; then
+              break
+            fi
+          done
+
+          conclusion=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs/$latest_run_id" \
+              -H 'Accept: application/vnd.github+json' \
+              -u ${{ secrets.GH_PAT }} | jq -r '.conclusion')
+
+          if [ "$conclusion" == "success" ]; then
+            echo "E2E testing workflow was successful."
+            # You can add additional steps or actions here for a successful workflow.
+          else
+            echo "E2E testing workflow failed."
+            # You can add additional steps or actions here for a failed workflow.
+          fi
       - uses: actions/checkout@v3
