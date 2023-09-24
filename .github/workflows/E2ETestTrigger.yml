@@ -44,9 +44,8 @@ jobs:
           echo $conclusion
           if [ "$conclusion" == "success" ]; then
             echo "E2E testing workflow was successful."
-            # You can add additional steps or actions here for a successful workflow.
           else
             echo "E2E testing workflow failed."
-            # You can add additional steps or actions here for a failed workflow.
+            exit 1
           fi
       - uses: actions/checkout@v3
