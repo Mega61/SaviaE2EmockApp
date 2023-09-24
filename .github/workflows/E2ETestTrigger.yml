@@ -4,9 +4,9 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
+  #push:
+   # branches:
+    #  - main
 
 jobs:
   build:
@@ -40,7 +40,8 @@ jobs:
           conclusion=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs/$latest_run_id" \
               -H 'Accept: application/vnd.github+json' \
               -u ${{ secrets.GH_PAT }} | jq -r '.conclusion')
-
+              
+          echo $conclusion
           if [ "$conclusion" == "success" ]; then
             echo "E2E testing workflow was successful."
             # You can add additional steps or actions here for a successful workflow.
