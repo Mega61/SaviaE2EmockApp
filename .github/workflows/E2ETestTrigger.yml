@@ -21,11 +21,11 @@ jobs:
           -H 'Accept: application/vnd.github+json' \
           -u ${{ secrets.GH_PAT }} \
           --data '{"ref":"main"}'
-
+          sleep 5
           latest_run_id=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs" \
             -H 'Accept: application/vnd.github+json' \
             -u ${{ secrets.GH_PAT }} | jq -r '.workflow_runs[0].id')
-
+          echo $latest_run_id
           while true; do
             status=$(curl -s -X GET "https://api.github.com/repos/$owner/$repo/actions/runs/$latest_run_id" \
               -H 'Accept: application/vnd.github+json' \
